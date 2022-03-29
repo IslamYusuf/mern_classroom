@@ -1,18 +1,43 @@
 import React, { useEffect, useState } from 'react'
-import { Button, TextField, Typography } from '@material-ui/core'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+    Button, TextField, Typography, Card, CardActions,
+    CardContent, Icon, makeStyles
+} from '@material-ui/core'
 import { CloudUploadRounded } from '@material-ui/icons'
-import { useNavigate } from 'react-router-dom'
 
 import { create } from './api-course'
 import auth from './../auth/auth-helper'
 
+const useStyles = makeStyles(theme => ({
+    card: {
+        maxWidth: 600, margin: 'auto',
+        textAlign: 'center', marginTop: theme.spacing(12),
+        paddingBottom: theme.spacing(2)
+    },
+    error: { verticalAlign: 'middle' },
+    title: {
+        marginTop: theme.spacing(2),
+        color: theme.palette.openTitle
+    },
+    textField: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1), width: 300
+    },
+    submit: { margin: 'auto', marginBottom: theme.spacing(2) },
+    input: { display: 'none' },
+    filename: { marginLeft: '10px' }
+}))
+
 const NewCourse = () => {
+    const classes = useStyles()
     const navigate = useNavigate()
     const [course, setCourse] = useState({
         name: '', description: '',
         image: '', category: '',
         redirect: false, error: ''
     })
+    const jwt = auth.isAuthenticated()
 
     const handleChange = field => e => {
         const value = field === 'image'
@@ -20,8 +45,6 @@ const NewCourse = () => {
             : e.target.value
         setCourse({ ...course, [field]: value })
     }
-
-    const jwt = auth.isAuthenticated()
 
     const clickSubmit = () => {
         let courseData = new FormData()
@@ -46,30 +69,58 @@ const NewCourse = () => {
 
     return (
         <div>
-            <Typography variant='h6' color='primary'>
-                New Course
-            </Typography>
-            <input id="icon-button-file" accept="image/*" onChange={handleChange('image')}
-                type="file" style={{ display: 'none' }} />
-            <label htmlFor="icon-button-file" >
-                <Button variant="contained" color="secondary" component="span">
-                    Upload Photo <CloudUploadRounded />
-                </Button>
-            </label >
-            <span>{course.image ? course.image.name : ''}</span>
-            <br />
-            <TextField id="name" label="Name"
-                value={course.name} onChange={handleChange('name')}
-            /> <br />
-            <TextField id="multiline-flexible" label="Description"
-                multiline rows="2" value={course.description}
-                onChange={handleChange('description')}
-            /> <br />
-            <TextField id="category" label="Category"
-                value={course.category} onChange={handleChange('category')}
-            />
-            <br /><br />
-            <Button variant='contained' color='primary' onClick={clickSubmit}>Submit</Button>
+            <Card className={classes.card}>
+                <CardContent>
+                    <Typography variant='h6' color='primary'
+                        className={classes.title}>
+                        New Course
+                    </Typography>
+                    <br />
+                    <input id="icon-button-file" accept="image/*"
+                        onChange={handleChange('image')}
+                        className={classes.input}
+                        type="file" style={{ display: 'none' }} />
+                    <label htmlFor="icon-button-file" >
+                        <Button variant="contained" color="secondary"
+                            component="span">
+                            Upload Photo <CloudUploadRounded />
+                        </Button>
+                    </label >
+                    <span className={classes.filename}>
+                        {course.image ? course.image.name : ''}
+                    </span>
+                    <br />
+                    <TextField id="name" label="Name"
+                        value={course.name} margin="normal"
+                        className={classes.textField}
+                        onChange={handleChange('name')}
+                    /> <br />
+                    <TextField id="multiline-flexible" label="Description"
+                        multiline rows="2" value={course.description}
+                        onChange={handleChange('description')}
+                        className={classes.textField} margin="normal"
+                    /> <br />
+                    <TextField id="category" label="Category"
+                        className={classes.textField}
+                        value={course.category} margin="normal"
+                        onChange={handleChange('category')}
+                    />
+                    {course.error && (
+                        <Typography component="p" color="error">
+                            <Icon color="error" className={classes.error}>error</Icon>
+                            {course.error}
+                        </Typography>)
+                    }
+                </CardContent>
+                <CardActions>
+                    <Button variant='contained' color='primary'
+                        onClick={clickSubmit} className={classes.submit}
+                    >Submit</Button>
+                    <Link to='/teach/courses' className={classes.submit}>
+                        <Button variant="contained">Cancel</Button>
+                    </Link>
+                </CardActions>
+            </Card>
         </div>
     )
 }

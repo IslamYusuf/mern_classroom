@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import {
-    Card, CardHeader, CardMedia, Divider, IconButton, makeStyles,
-    Typography
+    Avatar, Button, Card, CardHeader, CardMedia, Dialog, DialogActions,
+    DialogContent, DialogTitle, Divider, IconButton, List, ListItem,
+    ListItemAvatar, ListItemText, makeStyles, Typography
 } from '@material-ui/core'
-import { Edit } from '@material-ui/icons'
+import { Done, Edit, People } from '@material-ui/icons'
 
-import { read } from './api-course'
+import { read, update } from './api-course'
 import auth from '../auth/auth-helper'
+import { enrollmentStats } from './../enrollment/api-enrollment'
+import DeleteCourse from './DeleteCourse'
+import NewLesson from './NewLesson'
+import { Enroll } from './../enrollment'
 
 const useStyles = makeStyles(theme => ({
     root: theme.mixins.gutters({
@@ -50,6 +55,10 @@ const useStyles = makeStyles(theme => ({
 const Course = () => {
     const classes = useStyles()
     const { courseId } = useParams()
+    const navigate = useNavigate()
+    const [stats, setStats] = useState({})
+    const [open, setOpen] = useState(false)
+    const jwt = auth.isAuthenticated()
     const [course, setCourse] = useState({ instructor: {} })
     const [values, setValues] = useState({ error: '' })
 
@@ -57,9 +66,48 @@ const Course = () => {
         ? `/api/courses/photo/${course._id}?${new Date().getTime()}`
         : '/api/courses/defaultphoto'
 
+    const removeCourse = (course) => {
+        setValues({ ...values })
+        navigate('/teach/courses', { replace: true })
+    }
+    const addLesson = (course) => {
+        setCourse(course)
+    }
+    const clickPublish = () => {
+        if (course.lessons.length > 0) {
+            setOpen(true)
+        }
+    }
+    const publish = () => {
+        let courseData = new FormData()
+        courseData.append('published', true)
+
+        update({ courseId }, { t: jwt.token }, courseData)
+            .then((data) => {
+                if (data && data.error) {
+                    setValues({ ...values, error: data.error })
+                } else {
+                    setCourse({ ...course, published: true })
+                    setOpen(false)
+                }
+            })
+    }
+    const handleClose = () => {
+        setOpen(false)
+    }
+
     useEffect(() => {
         const abortController = new AbortController()
         const signal = abortController.signal
+
+        enrollmentStats({ courseId }, { t: jwt.token }, signal)
+            .then((data) => {
+                if (data.error) {
+                    setValues({ ...values, error: data.error })
+                } else {
+                    setStats(data)
+                }
+            })
 
         read({ courseId }, signal).then((data) => {
             if (data.error) {
@@ -68,6 +116,7 @@ const Course = () => {
                 setCourse(data)
             }
         })
+
         return function cleanup() {
             abortController.abort()
         }
@@ -94,24 +143,24 @@ const Course = () => {
                                             <Edit />
                                         </IconButton>
                                     </Link>
-                                    {/* !course.published ? (<>
-                                    <Button color="secondary" variant="outlined"
-                                        onClick={clickPublish}>
-                                        {course.lessons.length == 0 ? "Add atleast 1 lesson to publish" : "Publish"}
-                                    </Button>
-                                    <DeleteCourse course={course} onRemove={removeCourse} />
-                                </>) : (
-                                    <Button color="primary" variant="outlined">Published</Button>
-                                ) */}
+                                    {!course.published ? (<>
+                                        <Button color="secondary" variant="outlined"
+                                            onClick={clickPublish}>
+                                            {course.lessons.length == 0 ? "Add atleast 1 lesson to publish" : "Publish"}
+                                        </Button>
+                                        <DeleteCourse course={course} onRemove={removeCourse} />
+                                    </>) : (
+                                        <Button color="primary" variant="outlined">Published</Button>
+                                    )}
                                 </span>)
                             }
-                            {/* course.published && (<div>
+                            {course.published && (<div>
                                 <span className={classes.statSpan}>
-                                    <PeopleIcon /> {stats.totalEnrolled} enrolled </span>
+                                    <People /> {stats.totalEnrolled} enrolled </span>
                                 <span className={classes.statSpan}>
-                                    <CompletedIcon /> {stats.totalCompleted} completed </span>
+                                    <Done /> {stats.totalCompleted} completed </span>
                             </div>
-                            ) */}
+                            )}
                         </>
                     }
                 />
@@ -122,15 +171,59 @@ const Course = () => {
                         <Typography variant="body1" className={classes.subheading}>
                             {course.description}<br />
                         </Typography>
-                        {/* course.published &&
+                        {course.published &&
                             <div className={classes.enroll}>
                                 <Enroll courseId={course._id} />
                             </div>
-                        */}
+                        }
                     </div>
                 </div>
                 <Divider />
+                <div>
+                    <CardHeader
+                        title={<Typography variant="h6" className={classes.subheading}>Lessons</Typography>}
+                        subheader={<Typography variant="body1" className={classes.subheading}>
+                            {course.lessons && course.lessons.length} lessons</Typography>}
+                        action={auth.isAuthenticated().user &&
+                            auth.isAuthenticated().user._id == course.instructor._id && !course.published &&
+                            (<span className={classes.action}>
+                                <NewLesson courseId={course._id} addLesson={addLesson} />
+                            </span>)
+                        }
+                    />
+                    <List>
+                        {course.lessons && course.lessons.map((lesson, index) => {
+                            return (<span key={index}>
+                                <ListItem>
+                                    <ListItemAvatar>
+                                        <Avatar>{index + 1}</Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText primary={lesson.title} />
+                                </ListItem>
+                                <Divider variant="inset" component="li" />
+                            </span>)
+                        }
+                        )}
+                    </List>
+                </div>
             </Card>
+            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Publish Course</DialogTitle>
+                <DialogContent>
+                    <Typography
+                        variant="body1">Publishing your course will make it live to students for enrollment. </Typography>
+                    <Typography
+                        variant="body1">Make sure all lessons are added and ready for publishing.</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary" variant="contained">
+                        Cancel
+                    </Button>
+                    <Button onClick={publish} color="secondary" variant="contained">
+                        Publish
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     )
 }

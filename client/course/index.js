@@ -1,3 +1,7 @@
 export { default as Course } from './Course'
 export { default as MyCourses } from './MyCourses'
 export { default as NewCourse } from './NewCourse'
+export { default as Courses } from './Courses'
+export { default as DeleteCourse } from './DeleteCourse'
+export { default as EditCourse } from './EditCourse'
+export { default as NewLesson } from './NewLesson'

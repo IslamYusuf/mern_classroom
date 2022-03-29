@@ -4,7 +4,8 @@ import { Route, Routes } from 'react-router-dom'
 import { Home, Menu } from './core'
 import { Profile, Signup, Users, EditProfile } from './user'
 import { PrivateRoute, Signin } from './auth'
-import { MyCourses, Course, NewCourse } from './course'
+import { MyCourses, Course, NewCourse, EditCourse } from './course'
+import { Enrollment } from './enrollment'
 
 const MainRouter = () => {
     return (
@@ -32,24 +33,24 @@ const MainRouter = () => {
                         <NewCourse />
                     </PrivateRoute>
                 } />
-                {/* <Route path="/teach/course/edit/:courseId" element={
-                        <PrivateRoute>
-                           <EditCourse />
-                        </PrivateRoute>
-                } /> */}
+                <Route path="/teach/course/edit/:courseId" element={
+                    <PrivateRoute>
+                        <EditCourse />
+                    </PrivateRoute>
+                } />
                 <Route path="/teach/course/:courseId" element={
                     <PrivateRoute>
                         <Course />
                     </PrivateRoute>
                 } />
-                <Route path='/seller/courses' element={
+                <Route path="/learn/:enrollmentId" element={
                     <PrivateRoute>
-                        <MyCourses />
+                        <Enrollment />
                     </PrivateRoute>
                 } />
                 <Route path="*" element={
                     <main style={{ padding: "1rem" }}>
-                        <p>There's nothing here!</p>
+                        <p>There&apos;s nothing here!</p>
                     </main>
                 } />
             </Routes>

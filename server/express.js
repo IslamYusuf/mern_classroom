@@ -17,6 +17,7 @@ import Template from './../template'
 import userRoutes from './routes/user.routes'
 import authRoutes from './routes/auth.routes'
 import courseRoutes from './routes/course.routes'
+import enrollmentRoutes from './routes/enrollment.routes'
 import devBundle from './devBundle'
 
 const CURRENT_WORKING_DIR = process.cwd()
@@ -34,6 +35,7 @@ app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
 app.use('/', userRoutes)
 app.use('/', authRoutes)
 app.use('/', courseRoutes)
+app.use('/', enrollmentRoutes)
 
 //server side rendering
 app.get('*', (req, res) => {
