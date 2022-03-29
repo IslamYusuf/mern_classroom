@@ -49,7 +49,7 @@ const MainRouter = () => {
                     </PrivateRoute>
                 } />
                 <Route path="*" element={
-                    <main style={{ padding: "1rem" }}>
+                    <main style={{ padding: "1rem", marginTop: 45 }}>
                         <p>There&apos;s nothing here!</p>
                     </main>
                 } />
