@@ -70,13 +70,13 @@ const read = (req, res) => {
 const photo = (req, res, next) => {
     if (req.course.image.data) {
         res.set('Content-type', req.course.image.contentType)
-        res.send(req.course.image.data)
+        return res.send(req.course.image.data)
     }
     next()
 }
 
 const defaultPhoto = (_req, res) => {
-    res.sendFile(process.cwd() + defaultImage)
+    return res.sendFile(process.cwd() + defaultImage)
 }
 
 const list = async (req, res) => {
@@ -159,15 +159,16 @@ const isInstructor = (req, res, next) => {
     next()
 }
 
-const listPublished = (req, res) => {
-    Course.find({ published: true }, (err, courses) => {
-        if (err) {
-            return res.status(400).json({
-                error: errorHandler.getErrorMessage(err)
-            })
-        }
+const listPublished = async (req, res) => {
+    try {
+        const courses = await Course.find({ published: true })
+            .populate('instructor', '_id name')
         res.json(courses)
-    }).populate('instructor', '_id name')
+    } catch (err) {
+        return res.status(400).json({
+            error: errorHandler.getErrorMessage(err)
+        })
+    }
 }
 
 export default {

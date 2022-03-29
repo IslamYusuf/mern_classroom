@@ -41,7 +41,7 @@ export default function Courses(props) {
     }
 
     return (
-        <ImageList cellHeight={220} cols={2}
+        <ImageList rowHeight={220} cols={2}
             className={classes.gridList} >
             {props.courses.map((course, i) => {
                 return (findCommon(course) &&

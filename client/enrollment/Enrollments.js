@@ -32,7 +32,7 @@ export default function Enrollments(props) {
     const classes = useStyles()
     return (
         <div>
-            <ImageList cellHeight={120} className={classes.gridList} cols={4}>
+            <ImageList rowHeight={120} className={classes.gridList} cols={4}>
                 {props.enrollments.map((enrollment, i) => (
                     <ImageListItem key={i} className={classes.tile}>
                         <Link to={`/learn/${enrollment._id}`}>
