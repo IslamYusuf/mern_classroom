@@ -1,4 +1,4 @@
-export default ({markup, css}) => {
+export default ({ markup, css }) => {
     return `<!DOCTYPE html>
     <html lang="en">
         <head>
@@ -12,7 +12,7 @@ export default ({markup, css}) => {
                 rel="stylesheet"
                 href="https://fonts.googleapis.com/icon?family=Material+Icons"
             />
-                <title>MERN Skeleton</title>
+                <title>MERN Classroom</title>
         </head>
         <body>
             <div id="root">${markup}</div>

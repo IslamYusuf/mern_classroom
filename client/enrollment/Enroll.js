@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button'
-import { makeStyles } from '@material-ui/core/styles'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 import { create } from './api-enrollment'
 import auth from './../auth/auth-helper'
 
-const useStyles = makeStyles(() => ({
-    form: { minWidth: 500 }
-}))
-
 export default function Enroll(props) {
-    const classes = useStyles()
     const navigate = useNavigate()
+    const { pathname } = useLocation()
     const [values, setValues] = useState({
         enrollmentId: '', error: '',
         redirect: false
@@ -26,6 +21,7 @@ export default function Enroll(props) {
             .then((data) => {
                 if (data && data.error) {
                     setValues({ ...values, error: data.error })
+                    navigate(`/signin`, { state: { from: { pathname } } })
                 } else {
                     setValues({ ...values, enrollmentId: data._id, redirect: true })
                 }
