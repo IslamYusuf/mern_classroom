@@ -9,9 +9,25 @@ import { read, update } from './api-user'
 import auth from '../auth/auth-helper'
 
 const useStyles = makeStyles(theme => ({
+    card: {
+        maxWidth: 600, margin: 'auto',
+        textAlign: 'center',
+        marginTop: theme.spacing(12),
+        paddingBottom: theme.spacing(2)
+    },
     title: {
-        padding: `${theme.spacing(3)}px ${theme.spacing(2.5)}px ${theme.spacing(2)}px`,
-        color: theme.palette.openTitle
+        margin: theme.spacing(2),
+        color: theme.palette.protectedTitle
+    },
+    error: { verticalAlign: 'middle' },
+    textField: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        width: 300
+    },
+    submit: {
+        margin: 'auto',
+        marginBottom: theme.spacing(2)
     }
 }))
 

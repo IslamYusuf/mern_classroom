@@ -12,9 +12,14 @@ import auth from '../auth/auth-helper'
 import DeleteUser from './DeleteUser'
 
 const useStyles = makeStyles(theme => ({
+    root: theme.mixins.gutters({
+        maxWidth: 600, margin: 'auto',
+        padding: theme.spacing(3),
+        marginTop: theme.spacing(12)
+    }),
     title: {
-        padding: `${theme.spacing(3)}px ${theme.spacing(2.5)}px ${theme.spacing(2)}px`,
-        color: theme.palette.openTitle
+        marginTop: theme.spacing(3),
+        color: theme.palette.protectedTitle
     }
 }))
 

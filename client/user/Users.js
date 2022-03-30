@@ -1,17 +1,22 @@
-import React, {useEffect, useState} from 'react'
-import {Link} from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
-import { 
-    Avatar, IconButton, List, ListItemAvatar, ListItem, 
-    ListItemSecondaryAction, ListItemText, Paper, Typography 
+import {
+    Avatar, IconButton, List, ListItemAvatar, ListItem,
+    ListItemSecondaryAction, ListItemText, Paper, Typography
 } from '@material-ui/core'
 import { ArrowForward, Person } from '@material-ui/icons'
 
-import {list} from "./api-user"
+import { list } from "./api-user"
 
-const useStyles = makeStyles(theme =>({
+const useStyles = makeStyles(theme => ({
+    root: theme.mixins.gutters({
+        padding: theme.spacing(1),
+        margin: theme.spacing(5),
+        marginTop: theme.spacing(12),
+    }),
     title: {
-        padding:`${theme.spacing(3)}px ${theme.spacing(2.5)}px ${theme.spacing(2)}px`,
+        margin: `${theme.spacing(4)}px 0 ${theme.spacing(2)}px`,
         color: theme.palette.openTitle
     }
 }))
@@ -22,7 +27,7 @@ const Users = () => {
     useEffect(() => {
         const abortController = new AbortController()
         const signal = abortController.signal
-        
+
         list(signal).then((data) => {
             if (data && data.error) {
                 console.log(data.error)
@@ -30,37 +35,37 @@ const Users = () => {
                 setUsers(data)
             }
         })
-        return function cleanup(){
+        return function cleanup() {
             abortController.abort()
         }
-    },[])
+    }, [])
 
     return !users ? (<div>Loading..</div>) : (
         <Paper className={classes.root} elevation={4}>
-                <Typography variant="h6" className={classes.title}>
-                    All Users
-                </Typography>
-                <List dense>
-                    {users.map((item, i) => {
-                        return <Link to={`/user/${item._id}`} key={i}>
-                            <ListItem button>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <Person/>
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText primary={item.name}/>
-                                <ListItemSecondaryAction>
-                                    <IconButton>
-                                        <ArrowForward/>
-                                    </IconButton>
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        </Link>
-                    })}
-                </List>
+            <Typography variant="h6" className={classes.title}>
+                All Users
+            </Typography>
+            <List dense>
+                {users.map((item, i) => {
+                    return <Link to={`/user/${item._id}`} key={i}>
+                        <ListItem button>
+                            <ListItemAvatar>
+                                <Avatar>
+                                    <Person />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={item.name} />
+                            <ListItemSecondaryAction>
+                                <IconButton>
+                                    <ArrowForward />
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    </Link>
+                })}
+            </List>
         </Paper>
     )
 }
-    
+
 export default Users

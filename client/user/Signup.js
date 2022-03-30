@@ -1,32 +1,41 @@
-import React,{useState} from 'react'
-import { 
-    Button, Card, CardActions, CardContent, 
-    Icon, TextField, Typography, makeStyles, Dialog, 
+import React, { useState } from 'react'
+import {
+    Button, Card, CardActions, CardContent,
+    Icon, TextField, Typography, makeStyles, Dialog,
     DialogTitle, DialogContent, DialogContentText, DialogActions
 } from "@material-ui/core"
 import { Link } from "react-router-dom"
 
-import {create} from './api-user'
+import { create } from './api-user'
 
 const useStyles = makeStyles(theme => ({
     card: {
-        maxWidth: 600,
-        margin: 'auto',
-        marginTop: theme.spacing(5)
+        maxWidth: 600, margin: 'auto',
+        textAlign: 'center',
+        marginTop: theme.spacing(12),
+        paddingBottom: theme.spacing(2)
     },
+    error: { verticalAlign: 'middle' },
     title: {
-        padding:`${theme.spacing(3)}px ${theme.spacing(2.5)}px ${theme.spacing(2)}px`,
+        marginTop: theme.spacing(2),
         color: theme.palette.openTitle
+    },
+    textField: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        width: 300
+    },
+    submit: {
+        margin: 'auto',
+        marginBottom: theme.spacing(2)
     }
 }))
 
 export default function Signup() {
-    const classes = useStyles() 
+    const classes = useStyles()
     const [values, setValues] = useState({
-        name: '',
-        password: '',
-        email: '',
-        open: false,
+        name: '', password: '',
+        email: '', open: false,
         error: ''
     })
 
@@ -42,17 +51,17 @@ export default function Signup() {
         }
         create(user).then((data) => {
             if (data.error) {
-                setValues({ ...values, error: data.error})
+                setValues({ ...values, error: data.error })
             } else {
-                setValues({ ...values, error: '', open: true})
+                setValues({ ...values, error: '', open: true })
             }
         })
     }
 
-    const handleOnClose = (event,reason) =>{
+    const handleOnClose = (event, reason) => {
         //Disabling bakdropClick in the Dialog
         if (reason !== 'backdropClick') {
-            setValues({ ...values, open: false})
+            setValues({ ...values, open: false })
         }
     }
 
@@ -66,22 +75,22 @@ export default function Signup() {
                     <TextField id="name" label="Name"
                         className={classes.textField}
                         value={values.name} onChange={handleChange('name')}
-                        margin="normal"/>
-                    <br/>
+                        margin="normal" />
+                    <br />
                     <TextField id="email" type="email" label="Email"
                         className={classes.textField}
                         value={values.email} onChange={handleChange('email')}
-                        margin="normal"/>
-                    <br/>
+                        margin="normal" />
+                    <br />
                     <TextField id="password" type="password" label="Password"
                         className={classes.textField} value={values.password}
-                        onChange={handleChange('password')} margin="normal"/>
-                    <br/>
+                        onChange={handleChange('password')} margin="normal" />
+                    <br />
                     {
                         values.error && (
                             <Typography component="p" color="error">
-                            <Icon color="error" className={classes.error}>Error: </Icon>
-                            {values.error}</Typography>
+                                <Icon color="error" className={classes.error}>Error: </Icon>
+                                {values.error}</Typography>
                         )
                     }
                 </CardContent>
